@@ -17,13 +17,13 @@ userRouter.post("/signup", async (req: Request, res: Response) => {
       const hashedPassword = await bcrypt.hash(password, 5);
 
       //save to db
-      await User.create({
+      const user = await User.create({
         username,
         password: hashedPassword,
         email,
       });
       //generate jwt and send
-      const token = jwt.sign({ username }, JWT_SECRET as string);
+      const token = jwt.sign({ id: user._id }, JWT_SECRET as string);
       res.cookie("token", token, {
         expires: new Date(Date.now() + 900000),
       });
@@ -57,7 +57,7 @@ userRouter.post("/signin", async (req: Request, res: Response) => {
         throw new Error("Password is wrong!");
       }
       //generate jwt and send
-      const token = jwt.sign({ username: user.username }, JWT_SECRET as string);
+      const token = jwt.sign({ id: user._id }, JWT_SECRET as string);
       res.cookie("token", token, {
         expires: new Date(Date.now() + 900000),
       });

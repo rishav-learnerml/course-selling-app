@@ -1,33 +1,33 @@
 import { Router, Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { User } from "../schema/UserSchema";
+import { Admin } from "../schema/AdminSchema";
 import { signInSchema, signupSchema } from "../validations/validations";
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET_ADMIN;
 
 const adminRouter = Router();
 
 adminRouter.post("/signup", async (req: Request, res: Response) => {
-  const userdata = req.body;
+  const admindata = req.body;
   try {
-    const { success, error } = signupSchema.safeParse(userdata);
+    const { success, error } = signupSchema.safeParse(admindata);
     if (success) {
-      const { username, password, email } = userdata;
+      const { username, password, email } = admindata;
       const hashedPassword = await bcrypt.hash(password, 5);
 
       //save to db
-      await User.create({
+      const admin = await Admin.create({
         username,
         password: hashedPassword,
         email,
       });
       //generate jwt and send
-      const token = jwt.sign({ username }, JWT_SECRET as string);
+      const token = jwt.sign({ id: admin._id }, JWT_SECRET as string);
       res.cookie("token", token, {
         expires: new Date(Date.now() + 900000),
       });
-      res.json({ message: "Signed Up Succesfully" });
+      res.json({ message: "Admin Signed Up Succesfully" });
     } else {
       res.status(400).json({ message: error.issues[0].message });
     }
@@ -37,27 +37,27 @@ adminRouter.post("/signup", async (req: Request, res: Response) => {
 });
 
 adminRouter.post("/signin", async (req: Request, res: Response) => {
-  const userdata = req.body;
+  const admindata = req.body;
   try {
-    const { success, error } = signInSchema.safeParse(userdata);
+    const { success, error } = signInSchema.safeParse(admindata);
     if (success) {
       //find user in db
-      const { password, email } = userdata;
-      const user = await User.findOne({
+      const { password, email } = admindata;
+      const admin = await Admin.findOne({
         email,
       });
 
-      if (!user) {
+      if (!admin) {
         throw new Error("User not found!");
       }
 
-      const isPasswordCorrect = await bcrypt.compare(password, user.password);
+      const isPasswordCorrect = await bcrypt.compare(password, admin.password);
       if (!isPasswordCorrect) {
         throw new Error("Password is wrong!");
       }
       //generate jwt and send
       const token = jwt.sign(
-        { username: user.username },
+        { id: admin._id },
         JWT_SECRET as string
       );
       res.cookie("token", token, {
