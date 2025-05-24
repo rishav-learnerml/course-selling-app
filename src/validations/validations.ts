@@ -14,3 +14,12 @@ export const signInSchema = z
     password: z.string().min(6).max(20),
   })
   .strict();
+
+export const courseSchema = z
+  .object({
+    title: z.string().min(6).max(100),
+    description: z.string().min(6).max(200),
+    imageUrl: z.string().min(6).max(50),
+    price: z.number(),
+  })
+  .strict();

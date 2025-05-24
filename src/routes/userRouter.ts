@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import { User } from "../schema/UserSchema";
 import { signInSchema, signupSchema } from "../validations/validations";
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET_USER;
 
 const userRouter = Router();
 
@@ -27,7 +27,7 @@ userRouter.post("/signup", async (req: Request, res: Response) => {
       res.cookie("token", token, {
         expires: new Date(Date.now() + 900000),
       });
-      res.json({ message: "Signed Up Succesfully" });
+      res.json({ message: "User Signed Up Succesfully" });
     } else {
       const errors = error.issues.map((issue) => issue.message);
       res.status(400).json({ message: errors.join(",") });
@@ -61,7 +61,7 @@ userRouter.post("/signin", async (req: Request, res: Response) => {
       res.cookie("token", token, {
         expires: new Date(Date.now() + 900000),
       });
-      res.json({ message: "Signed In Succesfully" });
+      res.json({ message: "User Signed In Succesfully" });
     } else {
       const errors = error.issues.map((issue) => issue.message);
       res.status(400).json({ message: errors.join(",") });
