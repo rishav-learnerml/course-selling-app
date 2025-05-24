@@ -18,7 +18,7 @@ app.use("/course", courseRouter);
 connectToDb()
   .then(() => {
     app.listen(PORT, () => {
-      console.log(`Server Listening on PORT : http://localhost:${PORT}`);
+      console.log(`Server Listening on : http://localhost:${PORT}`);
     });
   })
   .catch((err) => console.error("Error : ", err));

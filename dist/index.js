@@ -19,7 +19,7 @@ app.use("/course", courseRouter_1.default);
 (0, db_1.default)()
     .then(() => {
     app.listen(PORT, () => {
-        console.log(`Server Listening on PORT : http://localhost:${PORT}`);
+        console.log(`Server Listening on : http://localhost:${PORT}`);
     });
 })
     .catch((err) => console.error("Error : ", err));
