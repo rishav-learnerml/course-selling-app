@@ -6,10 +6,10 @@ const adminMiddleware = (
   res: Response,
   next: NextFunction
 ): void => {
-  const middleareStrategy: Middleware = new Middleware(
+  const middleware: Middleware = new Middleware(
     new AdminMiddlewareStrategy()
   );
-  middleareStrategy.executeMiddleware(req, res, next);
+  middleware.executeMiddleware(req, res, next);
 };
 
 export default adminMiddleware;
