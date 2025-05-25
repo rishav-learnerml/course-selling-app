@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import { Admin } from "../schema/AdminSchema";
 import {
   courseSchema,
+  courseSchemaUpdate,
   signInSchema,
   signupSchema,
 } from "../validations/validations";
@@ -110,10 +111,68 @@ adminRouter.post(
   }
 );
 
-adminRouter.put("/course",adminMiddleware, (req: Request, res: Response) => {
+adminRouter.put(
+  "/course",
+  adminMiddleware,
+  async (req: Request, res: Response) => {
+    try {
+      const adminId = (req as any).userId;
 
-});
+      const coursedata = req.body;
+      // const { courseId, [description / imageUrl / price] } = coursedata;
 
-adminRouter.get("/course/bulk",adminMiddleware, (req: Request, res: Response) => {});
+      const { success, error } = courseSchemaUpdate.safeParse(coursedata);
+
+      if (success) {
+        //check if the course belongs to this admin
+        const course = await Course.findByIdAndUpdate(
+          { _id: coursedata.courseId, creatorId: adminId },
+          coursedata
+        );
+
+        if (!course) {
+          res.status(400).json({ message: "Course not found!" });
+          return;
+        }
+
+        res.json({
+          message: "course updated succesfully!",
+          courseId: course._id,
+        });
+      } else {
+        const errors = error.issues.map((issue) => issue.message);
+        res.status(400).json({ message: errors.join(",") });
+      }
+    } catch (error) {
+      res.status(400).json({ message: "something went wrong!", error });
+    }
+  }
+);
+
+adminRouter.get(
+  "/course/bulk",
+  adminMiddleware,
+  async (req: Request, res: Response) => {
+    try {
+      const adminId = (req as any).userId;
+
+      const courses = await Course.find({
+        creatorId: adminId,
+      });
+
+      if (!courses.length) {
+        res.status(400).json({ message: "No Courses found!" });
+        return;
+      }
+
+      res.json({
+        message: "Courses fetched succesfully!",
+        courses,
+      });
+    } catch (error) {
+      res.status(400).json({ message: "something went wrong!", error });
+    }
+  }
+);
 
 export default adminRouter;
