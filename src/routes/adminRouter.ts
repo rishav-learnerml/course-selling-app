@@ -30,7 +30,9 @@ adminRouter.post("/signup", async (req: Request, res: Response) => {
         email,
       });
       //generate jwt and send
-      const token = jwt.sign({ id: admin._id }, JWT_SECRET as string);
+      const token = jwt.sign({ id: admin._id }, JWT_SECRET as string, {
+        expiresIn: "15m",
+      });
       res.cookie("token", token, {
         expires: new Date(Date.now() + 900000),
       });
@@ -64,11 +66,13 @@ adminRouter.post("/signin", async (req: Request, res: Response) => {
         throw new Error("Password is wrong!");
       }
       //generate jwt and send
-      const token = jwt.sign({ id: admin._id }, JWT_SECRET as string);
+      const token = jwt.sign({ id: admin._id }, JWT_SECRET as string, {
+        expiresIn: "15m",
+      });
       res.cookie("token", token, {
         expires: new Date(Date.now() + 900000),
       });
-      res.json({ message: "Adin Signed In Succesfully" });
+      res.json({ message: "Admin Signed In Succesfully" });
     } else {
       const errors = error.issues.map((issue) => issue.message);
       res.status(400).json({ message: errors.join(",") });
@@ -125,7 +129,7 @@ adminRouter.put(
 
       if (success) {
         //check if the course belongs to this admin
-        const course = await Course.findByIdAndUpdate(
+        const course = await Course.updateOne(
           { _id: coursedata.courseId, creatorId: adminId },
           coursedata
         );
@@ -137,7 +141,7 @@ adminRouter.put(
 
         res.json({
           message: "course updated succesfully!",
-          courseId: course._id,
+          courseId: coursedata.courseId,
         });
       } else {
         const errors = error.issues.map((issue) => issue.message);

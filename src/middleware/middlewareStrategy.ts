@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import cookie from "cookie";
 
 abstract class MiddlewareStrategy {
   private JWT_TOKEN!: string;
@@ -17,9 +16,7 @@ abstract class MiddlewareStrategy {
         res.status(401).json({ message: "No cookie found" });
         return;
       }
-
-      const parsedCookies = cookie.parse(rawCookie);
-      const token = parsedCookies.token;
+      const token = rawCookie.split("=")[1];
 
       if (!token) {
         res.status(401).json({ message: "Token not found in cookies" });

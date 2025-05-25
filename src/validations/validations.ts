@@ -19,7 +19,7 @@ export const courseSchema = z
   .object({
     title: z.string().min(6).max(100),
     description: z.string().min(6).max(200),
-    imageUrl: z.string().min(6).max(50),
+    imageUrl: z.string().min(6),
     price: z.number(),
   })
   .strict();
@@ -29,7 +29,7 @@ export const courseSchemaUpdate = z
     courseId: z.string(),
     title: z.string().min(6).max(100).optional(),
     description: z.string().min(6).max(200).optional(),
-    imageUrl: z.string().min(6).max(50).optional(),
+    imageUrl: z.string().min(6).optional(),
     price: z.number().optional(),
   })
   .strict();
